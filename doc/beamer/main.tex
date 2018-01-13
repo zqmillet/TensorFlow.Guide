@@ -1,0 +1,135 @@
+\documentclass[10pt, t, aspectratio = 1610]{beamer}
+\usepackage{./template/beamertheme}
+\usepackage{amsmath}
+  \newcommand{\e}{\mathrm{e}}
+\usefonttheme[onlymath]{serif}
+\usepackage[UTF8, linespread = 1.5]{ctex}
+\usepackage{parskip}
+\usepackage[many, minted]{tcolorbox}
+\makeatletter
+\renewenvironment{quote}{%
+    \begin{tcolorbox}%
+    [
+        top = 3pt,
+        bottom = 3pt,
+        left = 3pt,
+        right = 3pt,
+        colback = beamer@barcolor!10!white,
+        colframe = beamer@headercolor,
+        colupper = beamer@normaltextcolor,
+    ]%
+}%
+{\end{tcolorbox}}
+
+\def\inlinebox@true{true}
+\define@key{inlinebox}{frame rule color} {\def\inlinebox@framerulecolor{#1}}
+\define@key{inlinebox}{frame back color} {\def\inlinebox@framebackcolor{#1}}
+\define@key{inlinebox}{frame text color} {\def\inlinebox@frametextcolor{#1}}
+\define@key{inlinebox}{frame rule width} {\def\inlinebox@framerulewidth{#1}}
+\define@key{inlinebox}{banner width}     {\def\inlinebox@bannerwidth{#1}}
+\define@key{inlinebox}{show banner}[true]{\def\inlinebox@showbanner{#1}}
+\define@key{inlinebox}{banner text color}{\def\inlinebox@bannertextcolor{#1}}
+\define@key{inlinebox}{banner back color}{\def\inlinebox@bannerbackcolor{#1}}
+\define@key{inlinebox}{banner text}      {\def\inlinebox@bannertext{#1}}
+\NewDocumentCommand{\inlinebox}{O{} m}{%
+  \setkeys{inlinebox}{%
+    frame rule color  = black,
+    frame back color  = white,
+    frame text color  = black,
+    frame rule width  = 0.4pt,
+    banner width      = 8pt,
+    show banner       = false,
+    banner text color = white,
+    banner back color = black,
+    banner text       = BAN,
+    #1
+  }%
+  \tcbox[%
+    enhanced,
+    tcbox raise base,
+    nobeforeafter,
+    boxrule           = \inlinebox@framerulewidth,
+    top               = -1pt,
+    bottom            = -1pt,
+    right             = -1pt,
+    arc               = 1pt,
+    left              = \ifx\inlinebox@showbanner\inlinebox@true\inlinebox@bannerwidth-2pt\else-1pt\fi,
+    colframe          = \inlinebox@framerulecolor,
+    coltext           = \inlinebox@frametextcolor,
+    colback           = \inlinebox@framebackcolor,
+    before upper      = {\vphantom{蛤dg}},
+    overlay           = {%
+      \begin{tcbclipinterior}
+        \ifx\inlinebox@showbanner\inlinebox@true
+          \fill[\inlinebox@bannerbackcolor] (frame.south west) rectangle node[text = \inlinebox@bannertextcolor, scale = 0.4, font = \sffamily\bfseries, rotate = 90] {\inlinebox@bannertext} ([xshift = \inlinebox@bannerwidth]frame.north west);
+        \fi
+      \end{tcbclipinterior}%
+    }%
+  ]{#2}%
+}
+\makeatother
+
+
+\newcommand{\inlinepython}[1]{\inlinebox[frame rule color = green]{\mintinline{python}{#1}}}
+\newcommand{\inlineframe}[1]{\inlinebox[frame rule color = black]{#1}}
+
+\usepackage{enumitem}
+  \setitemize[1]{itemsep = 0pt, partopsep = 0pt, parsep = 0pt, topsep = 0pt, leftmargin = 1em, label = $\bullet$}
+  \setitemize[2]{itemsep = 0pt, partopsep = 0pt, parsep = 0pt, topsep = 0pt, leftmargin = 0pt, label = $\bullet$}
+  \usepackage{tabu}
+  \tabuDisableCommands{%
+    \renewcommand\mintinline[2]{\texttt{\detokenize{#2}}}%
+  }
+  \tabulinesep = 3pt
+\makeatletter
+  \setlength{\parskip}{\medskipamount}
+
+  \newcommand{\@minipagerestore}{\setlength{\parskip}{\medskipamount}}
+  \makeatother
+\title{TensorFlow 入门}
+\subtitle{搭建自己的神经网络}
+\date{\today}
+\author{%
+    张琦\\
+    \href{mailto:zhangqi98@huawei.com}{{\tt zhangqi98@huawei.com}}%
+}
+
+\institute%
+{%
+    2012 实验室 $\cdot$ 测试工具部\\%
+    华为技术有限公司%
+}
+
+\pgfdeclareimage[height = 1cm]{titlepagelogo}{./template/icon_in_cover.pdf}
+\titlegraphic{%
+  \pgfuseimage{titlepagelogo}%
+}
+
+\newcommand{\insertcover}{{
+    \aauwavesbg%
+    \begin{frame}[plain, noframenumbering]
+         \titlepage
+    \end{frame}
+}}
+
+\newcommand{\insertthanks}{{
+    \aauwavesbg
+    \begin{frame}[plain, noframenumbering]
+        \finalpage{\huge 谢谢, 欢迎提问\vspace{-10pt}}
+    \end{frame}
+}}
+
+\begin{document}
+\insertcover
+
+\begin{frame}{目录}
+    \tableofcontents
+\end{frame}
+
+\input{./sections/introduction}
+\input{./sections/concept}
+\input{./sections/instruction}
+
+\insertthanks
+
+\end{document}

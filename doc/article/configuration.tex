@@ -1,0 +1,143 @@
+% ctex
+    \ctexset
+	{
+		punct              = quanjiao,
+		autoindent         = 2,
+		contentsname       = 目录,
+		listfigurename     = 图目录,
+		listtablename      = 表目录,
+		figurename         = 图,
+		tablename          = 表,
+		abstractname       = 摘要,
+		appendixname       = 附录,
+		appendix/numbering = true,
+		section            = {format+= \raggedright}
+	}
+    \setmainfont{Times Roman}
+
+\usepackage{amssymb, amsmath, bm, mathtools}
+	\let\oldvec\vec
+	\renewcommand{\vec}[1]{\oldvec{\bm{#1}}}
+	\DeclarePairedDelimiter{\abs}{\lvert}{\rvert}
+	\def\e{\mathrm{e}}
+	\def\dif{\mathrm{d}}
+
+\usepackage{hyperref}
+\usepackage{parskip}
+	\linespread{1.66}
+\usepackage{geometry}
+	\geometry
+	{
+		inner          = 1.1in,
+		outer          = 1.1in,
+		top            = 1.2in,
+		bottom         = 1.2in,
+		marginparwidth = 1.3in,
+		marginparsep   = 0pt,
+		headheight     = 21pt
+	}
+
+\usepackage{xcolor}
+  	\definecolor{green}{RGB}{0, 127, 0}
+	\definecolor{lightgreen}{RGB}{226, 247, 209}
+	\colorlet{lightblue}{blue!10}
+
+\usepackage{enumitem}
+    \setenumerate[1]{itemsep = 0pt, partopsep = 0pt, parsep = 0pt, topsep = 0pt, label = (\arabic*), leftmargin = \parindent}
+    \setitemize[1]  {itemsep = 0pt, partopsep = 0pt, parsep = 0pt, topsep = 0pt, leftmargin = 1em}
+    \setitemize[2]  {itemsep = 0pt, partopsep = 0pt, parsep = 0pt, topsep = 0pt, leftmargin = 0pt}
+    \setdescription {itemsep = 0pt, partopsep = 0pt, parsep = 0pt, topsep = 0pt}
+
+\usepackage{caption}
+	\captionsetup[figure]{
+		font = {small, bf},
+		labelsep = period,
+		textformat = simple,
+		skip = 5pt
+	}
+	\captionsetup[table]{
+		font = {small, bf},
+		labelsep = period,
+		textformat = simple,
+		skip = 5pt
+	}
+
+\usepackage{titlesec}
+	\titleformat*{\section}{\bfseries\fontsize{14pt}{14pt}\selectfont}
+	\titlespacing*{\section}{0pt}{10pt}{6pt}
+	\titleformat*{\subsection}{\bfseries\fontsize{12pt}{12pt}\selectfont}
+	\titlespacing*{\subsection}{0pt}{10pt}{6pt}
+	\titleformat*{\subsubsection}{\bfseries\fontsize{12pt}{12pt}\selectfont}
+	\titlespacing*{\subsubsection}{0pt}{10pt}{6pt}
+	\setcounter{secnumdepth}{4}
+	\setcounter{tocdepth}{1}
+
+\usepackage{xkeyval}
+\usepackage{etoolbox}
+\usepackage{xparse}
+\usepackage{multirow}
+\usepackage{tabu, longtable}
+    \tabulinesep = 3pt
+	\AtBeginEnvironment{longtabu}{\small}{}{}
+	\AtBeginEnvironment{tabu}{\small}{}{}
+	\AtBeginEnvironment{table}{\linespread{1.2}}{}{}
+\usepackage[many, minted]{tcolorbox}
+	\makeatletter
+	\def\inlinebox@true{true}
+	\define@key{inlinebox}{frame rule color} {\def\inlinebox@framerulecolor{#1}}
+	\define@key{inlinebox}{frame back color} {\def\inlinebox@framebackcolor{#1}}
+	\define@key{inlinebox}{frame text color} {\def\inlinebox@frametextcolor{#1}}
+	\define@key{inlinebox}{frame rule width} {\def\inlinebox@framerulewidth{#1}}
+	\define@key{inlinebox}{banner width}     {\def\inlinebox@bannerwidth{#1}}
+	\define@key{inlinebox}{show banner}[true]{\def\inlinebox@showbanner{#1}}
+	\define@key{inlinebox}{banner text color}{\def\inlinebox@bannertextcolor{#1}}
+	\define@key{inlinebox}{banner back color}{\def\inlinebox@bannerbackcolor{#1}}
+	\define@key{inlinebox}{banner text}      {\def\inlinebox@bannertext{#1}}
+	\NewDocumentCommand{\inlinebox}{O{} m}{%
+		\setkeys{inlinebox}{%
+			frame rule color  = black,
+			frame back color  = white,
+			frame text color  = black,
+			frame rule width  = 0.4pt,
+			banner width      = 8pt,
+			show banner       = false,
+			banner text color = white,
+			banner back color = black,
+			banner text       = BAN,
+			#1
+		}%
+		\tcbox[%
+			enhanced,
+			tcbox raise base,
+			nobeforeafter,
+			boxrule           = \inlinebox@framerulewidth,
+			top               = -1pt,
+			bottom            = -1pt,
+			right             = -1pt,
+			arc               = 1pt,
+			left              = \ifx\inlinebox@showbanner\inlinebox@true\inlinebox@bannerwidth-2pt\else-1pt\fi,
+			colframe          = \inlinebox@framerulecolor,
+			coltext           = \inlinebox@frametextcolor,
+			colback           = \inlinebox@framebackcolor,
+			before upper      = {\vphantom{蛤dg}},
+			overlay           = {%
+				\begin{tcbclipinterior}
+				\ifx\inlinebox@showbanner\inlinebox@true
+				\fill[\inlinebox@bannerbackcolor] (frame.south west) rectangle node[text = \inlinebox@bannertextcolor, scale = 0.4, font = \sffamily\bfseries, rotate = 90] {\inlinebox@bannertext} ([xshift = \inlinebox@bannerwidth]frame.north west);
+				\fi
+				\end{tcbclipinterior}%
+			}%
+		]{#2}%
+	}
+	\makeatother
+
+	\newcommand{\frameinline}[1]{%
+		\inlinebox[%
+		]{\mintinline{text}{#1}}}
+	\newcommand{\pythoninline}[1]{%
+		\inlinebox[%
+			frame rule color = green
+		]{\mintinline{python}{#1}}}
+%
+
+\usepackage{cleveref}
