@@ -227,3 +227,4 @@ TSWLatexianTemp*
 # qiqi
 main.pdf
 */_minted-main/*
+.DS_Store
