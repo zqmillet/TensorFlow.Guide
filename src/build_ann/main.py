@@ -1,41 +1,47 @@
 import tensorflow as tf
 import numpy as np
 import matplotlib.pyplot as plt
+import os
 
-def add_layer(inputs, in_size, out_size, activation_function = None):
-    Weight = tf.Variable(tf.random_normal([in_size, out_size]))
-    biases = tf.Variable(tf.zeros([1, out_size]) + 0.1)
-    Wx_plus_b = tf.matmul(inputs, Weight) + biases
-    if activation_function is None:
-        return Wx_plus_b
-    else:
-        return activation_function(Wx_plus_b)
+x1 = tf.placeholder(tf.float32, [None, 1])
+w1 = tf.Variable(tf.random_normal([1, 10]))
+b1 = tf.Variable(tf.ones([1, 10]))
 
-x_data = np.linspace(-1, 1, 300)[:, None]
-noise = np.random.normal(0, 0.05, x_data.shape)
-y_data = np.square(x_data) + noise
+x2 = tf.nn.relu(tf.matmul(x1, w1) + b1)
+w2 = tf.Variable(tf.random_normal([10, 1]))
+b2 = tf.Variable(tf.ones([1, 1]))
 
-xs = tf.placeholder(tf.float32, [None, 1])
-ys = tf.placeholder(tf.float32, [None, 1])
+predict_values = tf.matmul(x2, w2) + b2
+actual_values = tf.placeholder(tf.float32, [None, 1])
+loss = tf.reduce_mean(tf.reduce_sum(tf.square(actual_values - predict_values), reduction_indices = [1]))
 
-l1 = add_layer(xs, 1, 10, activation_function = tf.nn.relu)
-prediction = add_layer(l1, 10, 1, activation_function = None)
+session = tf.Session()
+session.run(tf.initialize_all_variables())
 
-loss = tf.reduce_mean(tf.reduce_sum(tf.square(ys - prediction), reduction_indices = [1]))
+# tensorboard_dir = './tensorboard/'
+# if not os.path.exists(tensorboard_dir):
+#     os.makedirs(tensorboard_dir)
+
+# writer = tf.summary.FileWriter(tensorboard_dir)
+# writer.add_graph(session.graph)
+
+input_data = np.linspace(-1, 1, 300)[:, None]
+output_data = np.square(input_data) + np.random.normal(0, 0.05, input_data.shape)
 train_step = tf.train.GradientDescentOptimizer(0.1).minimize(loss)
 
-init = tf.initialize_all_variables()
-sess = tf.Session()
-sess.run(init)
-
 for i in range(1000):
-    sess.run(train_step, feed_dict = {xs:x_data, ys:y_data})
+    feed_dict = {x1:input_data, actual_values:output_data}
+    session.run(train_step, feed_dict = feed_dict)
     if i % 50 == 0:
-        print(sess.run(loss, feed_dict = {xs:x_data, ys:y_data}))
+        print(session.run(loss, feed_dict = feed_dict))
 
-x = np.linspace(-1, 1, 300)[:, None]
-y = sess.run(prediction, feed_dict = {xs:x})
+x = input_data
+y = session.run(predict_values, feed_dict = {x1:x})
 
-plt.plot(x, y)
-plt.plot(x, y_data)
-plt.show()
+with open('./training_data', 'w') as file:
+    for x, y in zip(input_data.tolist(), output_data.tolist()):
+        file.write(str(x[0]) + ', ' + str(y[0]) + '\n')
+
+# plt.plot(x, y)
+# plt.plot(x, output_data)
+# plt.show()

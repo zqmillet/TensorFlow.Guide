@@ -61,14 +61,72 @@ TensorFlow 文档中使用了三种记号来方便地描述张量的维度: 阶,
 \begin{frame}[fragile]{\insertsection}{\insertsubsection}
 TensorFlow 中张量包括 \inlinepython{constant}, \inlinepython{placeholder} 和 \inlinepython{Variable}.
 
-
-     \inlinepython{tf.constant()} 函数定义如下所示.
 \begin{onlyenv}<2>
-\begin{minted}{python}
+\inlinepython{tf.constant()} 函数提供在 TensorFlow 中定义不可更改张量的方法, 定义如下所示.
+
+\begin{pythoncode}
 def constant(value, dtype=None, shape=None, name="Const", verify_shape=False)
-\end{minted}
+\end{pythoncode}
+
+\begin{itemize}
+\item \inlinepython{value}, 符合 TensorFlow 中定义的数据类型的常数值或者常数列表;
+\item \inlinepython{dtype}, 数据类型, 可选;
+\item \inlinepython{shape}, 常量的形状, 可选;
+\item \inlinepython{name}, 常量的名字, 可选;
+\item \inlinepython{verify_shape}, 常量的形状是否可以被更改, 默认不可更改.
+\end{itemize}
+
+除了直接赋值以外, 还可使用 \inlinepython{tf.ones()}, \inlinepython{tf.zeros()} 等初始化张量的方法.
 \end{onlyenv}
 
+\begin{onlyenv}<3>
+\inlinepython{tf.placeholder()} 函数提供在 TensorFlow 中定义占位张量的方法, 定义如下所示.
+
+\begin{pythoncode}
+def placeholder(dtype, shape=None, name=None)
+\end{pythoncode}
+
+\begin{itemize}
+\item \inlinepython{dtype} 指定占位张量的数据类型, 可以是 TensorFlow 中的数据类型, 如常用的 \inlinepython{tf.float32}, \inlinepython{tf.float64} 等数值类型;
+\item \inlinepython{shape} 表示数据类型, 默认的 \inlinepython{None} 是一个一维的数值, \inlinepython{shape = [None, 5]}, 表示行不定, 列是 \inlinepython{5};
+\item \inlinepython{name} 是张量名称;
+\end{itemize}
+
+占位变量是一种 TensorFlow 用来解决读取大量训练数据问题的机制, 它允许你现在不用给它赋值, 随着训练的开始, 再把训练数据传送给训练网络学习.
+\end{onlyenv}
+
+\begin{onlyenv}<4->
+TensorFlow 中变量是通过 \inlinepython{Variable} 类来实现的, 初始化函数 \inlinepython{tf.Variable()} 定义如下.
+
+\begin{pythoncode}
+def __init__(self, initial_value=None, trainable=True, collections=None, validate_shape=True, caching_device=None, name=None, variable_def=None, dtype=None, expected_shape=None, import_scope=None)
+\end{pythoncode}
+
+
+\only<4>{
+\begin{itemize}
+\item \inlinepython{initial_value}, 初始值, 必填, 张量或可以转换为张量的 Python 对象;
+\item \inlinepython{trainable}, 如果参数 \inlinepython{trainable} 的值为 \inlinepython{True}, 则默认值也将变量添加到图形中集合 \inlinepython{GraphKeys.TRAINABLE_VARIABLES}。这个集合用作 \inlinepython{Optimizer} 类使用的默认变量列表;
+\item \inlinepython{collections}, 新的变量被添加到这些集合。默认为 \inlinepython{[GraphKeys.GLOBAL_VARIABLES]};
+\end{itemize}
+}
+\only<5>{
+\begin{itemize}
+\item \inlinepython{validate_shape}, 如果 \inlinepython{False}, 允许变量用初始化未知形状的值。如果 \inlinepython{True}, 默认的形状 \inlinepython{initial_value} 必须是已知的;
+\item \inlinepython{caching_device}, 指定变量的默认缓存位置;
+\item \inlinepython{name}, 是张量名称;
+\end{itemize}
+}
+\only<6>{
+\begin{itemize}
+\item \inlinepython{variable_def}, 指定 \inlinepython{VariableDef} 的协议缓冲区;
+\item \inlinepython{dtype}, 指定张量的数据类型;
+\item \inlinepython{expected_shape}, 是张量的形状, 如果设置, \inlinepython{initial_value} 需要符合这个形状;
+\item \inlinepython{import_scope}, 张量名称前缀.
+\end{itemize}
+}
+
+\end{onlyenv}
 \end{frame}
 
 \subsection{节点 Operator}
@@ -112,7 +170,96 @@ def constant(value, dtype=None, shape=None, name="Const", verify_shape=False)
 \end{minipage}
 \end{frame}
 
+\begin{frame}[fragile]{\insertsection}{\insertsubsection}
+\begin{pythoncode}
+import tensorflow as tf
+import numpy as np
+
+x1 = tf.placeholder(tf.float32, [None, 1])
+w1 = tf.Variable(tf.random_normal([1, 10]))
+b1 = tf.Variable(tf.ones([1, 10]))
+
+x2 = tf.nn.relu(tf.matmul(x1, w1) + b1)
+w2 = tf.Variable(tf.random_normal([10, 1]))
+b2 = tf.Variable(tf.ones([1, 1]))
+
+predict_values = tf.matmul(x2, w2) + b2
+actual_values = tf.placeholder(tf.float32, [None, 1])
+loss = tf.reduce_mean(tf.reduce_sum(tf.square(actual_values - predict_values), reduction_indices = [1]))
+\end{pythoncode}
+
+\vspace{-7.5cm}\hspace{10.5cm}\scalebox{0.53}{\begin{tikzpicture}[%
+  tensor/.style = {rectangle, inner sep = 2pt, rounded corners = 0.4cm, draw, align = flush center, minimum height = 0.8cm, minimum width = 0.8cm},
+  operator/.style = {tensor, fill = black, draw = none, text = white, inner sep = 2pt},
+  line width = 1pt,
+  y = 1.1cm
+]
+\node[tensor, circle]   (x1) at (9, 0) {$x_1$};
+\node[tensor, circle]   (w1) at (7, 0) {$W_1$};
+\node[operator]         (t1) at (8, 1) {\mintinline{text}{tf.matmul}};
+\node[tensor, circle]   (b1) at (6, 1) {$b_1$};
+\node[operator]         (p1) at (7, 2) {\mintinline{text}{tf.add}};
+\node[operator]         (r1) at (7, 3) {\mintinline{text}{tf.nn.relu}};
+\node[tensor, circle]   (w2) at (5, 3) {$W_2$};
+\node[operator]         (t2) at (6, 4) {\mintinline{text}{tf.matmul}};
+\node[tensor, circle]   (b2) at (4, 4) {$b_2$};
+\node[operator]         (p2) at (5, 5) {\mintinline{text}{tf.add}};
+\node[tensor]           (pv) at (5, 6) {\mintinline{text}{prediction_values}};
+\node[tensor]           (av) at (8, 6) {\mintinline{text}{actual_values}};
+\node[operator]         (sb) at (6.5, 7.5) {\mintinline{text}{tf.sub}};
+\node[operator]         (sq) at (6.5, 8.5) {\mintinline{text}{tf.square}};
+\node[operator]         (rs) at (6.5, 9.5) {\mintinline{text}{tf.reduce_sum}};
+\node[operator]         (rm) at (6.5, 10.5) {\mintinline{text}{tf.reduce_mean}};
+\node[tensor]           (ls) at (6.5, 11.5) {\mintinline{text}{loss}};
+
+\draw[->] (x1) -- (t1);
+\draw[->] (w1) -- (t1);
+\draw[->] (b1) -- (p1);
+\draw[->] (t1) -- (p1);
+\draw[->] (p1) -- (r1);
+\draw[->] (w2) -- (t2);
+\draw[->] (r1) -- (t2);
+\draw[->] (b2) -- (p2);
+\draw[->] (t2) -- (p2);
+\draw[->] (p2) -- (pv);
+\draw[->] (pv) -- (sb);
+\draw[->] (av) -- (sb);
+\draw[->] (sb) -- (sq);
+\draw[->] (sq) -- (rs);
+\draw[->] (rs) -- (rm);
+\draw[->] (rm) -- (ls);
+\end{tikzpicture}}
+\end{frame}
+
 \subsection{会话 Session}
-\begin{frame}{\insertsection}{\insertsubsection}
-233
+\begin{frame}[fragile]{\insertsection}{\insertsubsection}
+构造阶段完成后, 才能启动图。启动图的第一步是创建一个 Session 对象, 如果无任何创建参数, 会话构造器将启动默认图。会话会管理TensorFlow程序运行时的所有资源。当所有计算完成之后需要关闭会话来帮助系统回收资源，否则就可能出现资源泄露的问题。
+
+\begin{minipage}[t]{0.48\textwidth}
+\begin{pythoncode}
+import tensorflow as tf
+
+a = tf.constant([1.0, 2.0])
+b = tf.constant([2.0, 3.0])
+result = a + b
+
+session = tf.Session()
+print(session.run(result))
+session.close()
+\end{pythoncode}
+\end{minipage}%
+\hfill%
+\begin{minipage}[t]{0.48\textwidth}
+\begin{pythoncode}
+import tensorflow as tf
+
+a = tf.constant([1.0, 2.0])
+b = tf.constant([2.0, 3.0])
+result = a + b
+
+with tf.Session() as session:
+    print(session.run(result))
+# session.close()
+\end{pythoncode}
+\end{minipage}
 \end{frame}

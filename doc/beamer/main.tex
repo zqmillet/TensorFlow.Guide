@@ -67,11 +67,34 @@
     }%
   ]{#2}%
 }
+
+\newtcblisting{pythoncode}{
+    listing engine = minted,
+    minted style = colorful,
+    minted language = python,
+    minted options = {%
+        fontsize = \fontsize{9}{9}\selectfont,
+        linenos,
+        numbersep = 3mm,
+        autogobble,
+        breaklines,
+        breakafter = d},
+    colback = beamer@barcolor!5!white,
+    colframe = beamer@headercolor,
+    listing only,
+    left = 5mm,
+    top = 0pt,
+    bottom = 0pt,
+    enhanced,
+    overlay = {%
+        \begin{tcbclipinterior}\fill[beamer@headercolor!20!white] (frame.south west)
+            rectangle ([xshift=5mm]frame.north west);\end{tcbclipinterior}}%
+}
+\newcommand{\inlinepython}[1]{\inlinebox[frame rule color = black!30!white]{\mintinline{python}{#1}}}
+\newcommand{\inlineframe}[1]{\inlinebox[frame rule color = black]{#1}}
 \makeatother
 
 
-\newcommand{\inlinepython}[1]{\inlinebox[frame rule color = green]{\mintinline{python}{#1}}}
-\newcommand{\inlineframe}[1]{\inlinebox[frame rule color = black]{#1}}
 
 \usepackage{enumitem}
   \setitemize[1]{itemsep = 0pt, partopsep = 0pt, parsep = 0pt, topsep = 0pt, leftmargin = 1em, label = $\bullet$}
@@ -90,14 +113,13 @@
 \subtitle{搭建自己的神经网络}
 \date{\today}
 \author{%
-    张琦\\
-    \href{mailto:zhangqi98@huawei.com}{{\tt zhangqi98@huawei.com}}%
+    Qiqi%
 }
 
 \institute%
 {%
-    2012 实验室 $\cdot$ 测试工具部\\%
-    华为技术有限公司%
+    2333 $\cdot$ 2333\\%
+    23333%
 }
 
 \pgfdeclareimage[height = 1cm]{titlepagelogo}{./template/icon_in_cover.pdf}
@@ -119,6 +141,13 @@
     \end{frame}
 }}
 
+\usepackage{pgfplots}
+\usetikzlibrary{arrows.meta}
+\tikzset
+{
+  > = {Stealth[length=5pt]},
+}
+
 \begin{document}
 \insertcover
 
@@ -128,7 +157,7 @@
 
 \input{./sections/introduction}
 \input{./sections/concept}
-\input{./sections/instruction}
+\input{./sections/practice}
 
 \insertthanks
 
