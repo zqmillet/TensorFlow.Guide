@@ -1,6 +1,6 @@
 \documentclass[10pt, t, aspectratio = 1610]{beamer}
 \usepackage{./template/beamertheme}
-\usepackage{amsmath}
+\usepackage{amsmath, bm}
   \newcommand{\e}{\mathrm{e}}
 \usefonttheme[onlymath]{serif}
 \usepackage[UTF8, linespread = 1.5]{ctex}
@@ -145,7 +145,25 @@
 \usetikzlibrary{arrows.meta}
 \tikzset
 {
-  > = {Stealth[length=5pt]},
+  > = {Stealth[length = 5pt]},
+}
+
+\pgfplotsset{
+    compat = newest,
+    discard if not/.style 2 args={
+        x filter/.code={
+            \edef\tempa{\thisrow{#1}}
+            \edef\tempb{#2}
+            \ifx\tempa\tempb
+            \else
+                \def\pgfmathresult{inf}
+            \fi
+        }
+    },
+    every tick label/.append style = {font=\scriptsize},
+    label style = {inner sep = 0pt, font=\footnotesize},
+    title style = {inner sep = 0pt, font=\footnotesize},
+    legend style={nodes={scale=0.6, transform shape}},
 }
 
 \begin{document}
@@ -155,6 +173,7 @@
     \tableofcontents
 \end{frame}
 
+\input{./sections/appetizer}
 \input{./sections/introduction}
 \input{./sections/concept}
 \input{./sections/practice}

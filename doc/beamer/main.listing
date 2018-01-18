@@ -1,9 +1,11 @@
-import tensorflow as tf
+session = tf.Session()
+session.run(tf.initialize_all_variables())
 
-a = tf.constant([1.0, 2.0])
-b = tf.constant([2.0, 3.0])
-result = a + b
+for step in range(1000):
+    feed_dict = {x1:input_data, actual_values:output_data}
+    session.run(train_step, feed_dict = feed_dict)
 
-with tf.Session() as session:
-    print(session.run(result))
-# session.close()
+    if step % 50 == 0:
+        print(session.run(loss, feed_dict = feed_dict))
+
+session.close()
