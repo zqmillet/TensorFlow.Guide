@@ -16,7 +16,8 @@
   \begin{axis}[%
     xlabel = $x_1$,
     ylabel = $x_2$,
-    height = 7cm,
+    height = 7.8cm,
+    width = 7cm,
     title = $500$ 个点的分布图
   ]
     \addplot[only marks, discard if not={type}{1}, blue] table[col sep=comma, x = x1, y = x2]{../../src/classification/training.dat};
@@ -30,11 +31,13 @@
 \begin{frame}{\insertsection}{\insertsubsection}
 我们不妨设绿色为 $1$, 蓝色为 $0$, 那么, 问题就变成了找到一个坐标 $(x_1, x_2)$ 到颜色 $y$ 的一个映射关系 $y = h(x_1, x_2)$.\vspace{10pt}
 
-\begin{minipage}[m]{0.52\textwidth}
+\begin{minipage}[m]{0.55\textwidth}
 为此, 我们建立一个简单的神经网络, 如图所示.
 \begin{center}
 \scalebox{0.8}{%
-\begin{tikzpicture}[node/.style = {circle, draw, inner sep = 0pt, minimum size = 0.8cm}]
+\begin{tikzpicture}[%
+  node/.style = {circle, draw, inner sep = 0pt, minimum size = 0.8cm},
+  x = 1.4cm]
   \node[node] (x1) at (0, 2) {$x_1$};
   \node[node] (x2) at (0, 1) {$x_2$};
   \node[node] (b)  at (0, 0) {$b$};
@@ -55,7 +58,7 @@
 \end{align*}
 \end{minipage}%
 \hfill%
-\begin{minipage}[m]{0.44\textwidth}
+\begin{minipage}[m]{0.43\textwidth}
 \begin{tikzpicture}
   \begin{axis}[width = \textwidth,
                height = 5.7cm,
@@ -127,46 +130,84 @@ p(X) = \prod_{i = 1}^{500} p(X_i)\text{,}
   \ln p(X) = \sum_{i = 1}^{500} y_i\ln H(\bm{W}\bm{x}_i + 1) + (1 - y_i)\ln\big(1 - H(\bm{W}\bm{x}_i + 1)\big)\text{.}
 \]
 
-但是, 上述目标函数还存在问题, 因为函数 $H(\,\cdot\,)$ 的存在, 导致函数 $\ln p(X)$ 不可微, 也就不能采用梯度下降法来计算函数的最值(其实是极值).
-
-解决方法就是用 Sigmoid 函数 $g(\,\cdot\,)$ 代替上式中的单位阶跃函数 $H(\,\cdot\,)$.
+但是, 上述目标函数还存在问题:%
+%
+\begin{itemize}
+\item 导致函数 $\ln p(X)$ 不可微, 不能采用梯度下降法来计算函数的最值(其实是极值);
+\item 只要有一个预测错误, 函数 $\ln p(X) = -\infty$, 目标函数并不能衡量模型的精度.
+\end{itemize}
 \end{frame}
 
-\subsection{Sigmoid 函数}
 \begin{frame}{\insertsection}{\insertsubsection}
-为什么可以用 Sigmoid 函数 $g(\,\cdot\,)$ 代替单位阶跃函数 $H(\,\cdot\,)$?
-
-\begin{minipage}[m]{0.48\textwidth}
+解决方法就是用 Sigmoid 函数 $g(\,\cdot\,)$ 代替上式中的单位阶跃函数 $H(\,\cdot\,)$, 原因有:
 \begin{itemize}
-\item Sigmoid 处处可微, Sigmoid 的表达式为:
+\item Sigmoid 函数与单位阶跃函数形状非常相似, 并且值域为 $(0, 1)$, 不会导致目标函数出现 $-\infty$ 的情况, 其函数图像如右图所示.
+\end{itemize}\vspace{-10pt}
+\begin{minipage}[t]{0.48\textwidth}
+\begin{itemize}
+\item Sigmoid 处处可微, Sigmoid 的表达式为:%
 \[
   g(x) = \frac{1}{1 + \exp(-x)}\text{.}
 \]
-\item Sigmoid 函数与单位阶跃函数形状非常相似, 其函数图像如右图所示.
-\item Sigmoid 函数有非常好的导函数性质, 有:
+\item Sigmoid 函数有非常好的导函数性质, 有:%
 \[
-  g'(x) = g(x)\cdot\big(1 - g(x)\big)\text{.}
+  \frac{\dif g(x)}{\dif x} = g(x)\cdot\big(1 - g(x)\big)\text{.}
 \]
 \end{itemize}
 \end{minipage}%
 \hfill%
-\begin{minipage}[m]{0.48\textwidth}
+\begin{minipage}[t]{0.48\textwidth}
 \begin{figure}
-  \centering
+  \centering\vspace{-20pt}
   \begin{tikzpicture}
-    \begin{axis}[height = 6cm,
+    \begin{axis}[height = 4.5cm,
                  width = \textwidth,
                  xlabel = $x$,
                  title = Sigmoid 函数与单位阶跃函数图像,
                  legend pos = north west,]
-      \addplot[mark = none, blue, domain = -50:50, samples = 100] {(x > 0)};
-      \addplot[mark = none, green, domain = -50:50, samples = 100] {(x <= 0) * exp(x)/(1 + exp(x)) + (x > 0) / (1 + exp(-x))};
+      \addplot[mark = none, blue, domain = -30:30, samples = 100] {(x > 0)};
+      \addplot[mark = none, green, domain = -30:30, samples = 100] {(x <= 0) * exp(x)/(1 + exp(x)) + (x > 0) / (1 + exp(-x))};
       \legend{单位阶跃函数, Sigmoid 函数};
     \end{axis}
   \end{tikzpicture}
 \end{figure}
 \end{minipage}
+\begin{flalign*}
+& \text{目标函数:} &&  \ell(\bm{W}) = \sum_{i = 1}^{500} y_i\ln g(\bm{W}\bm{x}_i + 1) + (1 - y_i)\ln\big(1 - g(\bm{W}\bm{x}_i + 1)\big)\text{.} &&
+\end{flalign*}
+\end{frame}
 
+\subsection{参数训练}
+\begin{frame}{\insertsection}{\insertsubsection}
+参数训练的本质是找到一个参数 $\bm{W}$ 使目标函数 $\ell(\bm{W})$ 取得最小值, 常用的是梯度下降法.
 
+\begin{quote}
+把 $\bm{W} = (W_1, W_2)$ 看成是平面坐标, $\ell(\bm{W})$ 看作是坐标 $(W_1, W_2)$ 的海拔高度, 梯度下降法的策略就是每次向最陡的方向走一步, 一直走到海拔不变为止, 此时就是海拔``最低点'', 即 $\ell(\bm{W})$ 的极小值点.
+\end{quote}\vspace{-15pt}
 
+\tikzstyle{every picture}+=[remember picture]
+\tikzstyle{na} = [baseline=-.5ex]
+\begin{flalign*}
+& \text{梯度下降的迭代公式为: } &&
+\tikz[baseline]{\node[draw = blue, anchor = base, rounded corners] (w1) {$\bm{W}_n$};} \gets
+\tikz[baseline]{\node[draw = red, anchor = base, rounded corners] (w2) {$\bm{W}_{n-1}$};} -
+\tikz[baseline]{\node[draw = black, anchor = base, rounded corners] (r) {$\bm{r}$};}\cdot
+\tikz[baseline]{\node[draw = green, anchor = base, rounded corners] (p) {$\dfrac{\partial \ell(\bm{W})}{\partial \bm{W}}\Big|_{\bm{W} = \bm{W}_{n-1}}$};}
+\text{，}
+&& \text{其中:}
+\end{flalign*}
+
+\begin{itemize}
+\item 下一步的位置;\tikz[]{\node[anchor = base] (w1') {\ };}
+\item 当前站的位置;\tikz[]{\node[anchor = base] (w2') {\ };}
+\item 步长, 也被称为学习率;\tikz[]{\node[anchor = base] (r') {\ };}
+\item 最陡的方向, 也就是梯度.\tikz[]{\node[anchor = base] (p') {\ };}
+\end{itemize}
+
+\begin{tikzpicture}[overlay]
+\draw[->, rounded corners, blue] (w1') -| (w1);
+\draw[->, rounded corners, red] (w2') -| (w2);
+\draw[->, rounded corners, black] (r') -| (r);
+\draw[->, rounded corners, green] (p') -| (p);
+\end{tikzpicture}
 \end{frame}
