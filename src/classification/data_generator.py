@@ -9,7 +9,7 @@ def classify(x1, x2):
     return A if y > 0 else B
 
 def main():
-    with open('./training.dat', 'w', encoding = 'utf8') as file:
+    with open('./training_data.dat', 'w', encoding = 'utf8') as file:
         file.write('x1, x2, type\n')
         for _ in range(500):
             x1 = uniform(-1, 1)

@@ -1,12 +1,26 @@
 \documentclass[10pt, t, aspectratio = 1610]{beamer}
 \usepackage{./template/beamertheme}
-\usepackage{amsmath, bm}
+\usepackage{amsmath, bm, mathtools}
   \newcommand{\e}{\mathrm{e}}
   \newcommand{\dif}{\mathrm{d}}
+  \DeclareMathOperator{\relu}{relu}
 \usefonttheme{professionalfonts}
+
+\makeatletter
+\colorlet{barcolor}{beamer@barcolor}
+\colorlet{headercolor}{beamer@headercolor}
+\makeatother
 \usepackage[UTF8, linespread = 1.5]{ctex}
+\usepackage{multicol}
+\setlength{\columnsep}{1cm}
+\usepackage{lipsum}
 \usepackage{parskip}
+\usepackage{contour}
+  \contourlength{1pt}
+  \contournumber{50}
+  \newcommand{\shadowtext}[1]{\contour{white}{#1}}
 \usepackage[many, minted]{tcolorbox}
+\tcbuselibrary{breakable}
 \makeatletter
 \renewenvironment{quote}{%
     \begin{tcolorbox}%
@@ -69,28 +83,40 @@
   ]{#2}%
 }
 
-\newtcblisting{pythoncode}{
+\newtcblisting{pythoncode}[1][]{
     listing engine = minted,
     minted style = colorful,
     minted language = python,
     minted options = {%
         fontsize = \fontsize{9}{9}\selectfont,
         linenos,
+        mathescape = true,
         numbersep = 3mm,
         autogobble,
         breaklines,
-        breakafter = d},
-    colback = beamer@barcolor!5!white,
-    colframe = beamer@headercolor,
+        breakafter = d,
+        #1},
+    colback = barcolor!5!white,
+    colframe = headercolor,
     listing only,
     left = 5mm,
     top = 0pt,
     bottom = 0pt,
     enhanced,
     overlay = {%
-        \begin{tcbclipinterior}\fill[beamer@headercolor!20!white] (frame.south west)
+        \begin{tcbclipinterior}\fill[headercolor!20!white] (frame.south west)
             rectangle ([xshift=5mm]frame.north west);\end{tcbclipinterior}}%
 }
+
+% \newtcblisting{pythoncode}{
+%     colback = beamer@barcolor!5!white,
+%     colframe = beamer@headercolor,
+%     left = 5mm,
+%     top = 0pt,
+%     bottom = 0pt,
+%     enhanced,
+% }
+
 \newcommand{\inlinepython}[1]{\inlinebox[frame rule color = black!30!white]{\mintinline{python}{#1}}}
 \newcommand{\inlineframe}[1]{\inlinebox[frame rule color = black]{#1}}
 \makeatother
@@ -99,7 +125,7 @@
 
 \usepackage{enumitem}
   \setitemize[1]{itemsep = 0pt, partopsep = 0pt, parsep = 0pt, topsep = 0pt, leftmargin = 1em, label = $\bullet$}
-  \setitemize[2]{itemsep = 0pt, partopsep = 0pt, parsep = 0pt, topsep = 0pt, leftmargin = 0pt, label = $\bullet$}
+  \setitemize[2]{itemsep = 0pt, partopsep = 0pt, parsep = 0pt, topsep = 0pt, leftmargin = 1em, label = $-$}
   \usepackage{tabu}
   \tabuDisableCommands{%
     \renewcommand\mintinline[2]{\texttt{\detokenize{#2}}}%
@@ -149,6 +175,7 @@
   > = {Stealth[length = 5pt]},
 }
 
+\usepgfplotslibrary{groupplots}
 \pgfplotsset{
     compat = newest,
     discard if not/.style 2 args={
@@ -165,19 +192,45 @@
     label style = {inner sep = 0pt, font=\footnotesize},
     title style = {inner sep = 0pt, font=\footnotesize},
     legend style={nodes={scale=0.6, transform shape}},
+    layers/my layer set/.define layer set={
+        background,
+        main,
+        foreground
+    }{
+    },
+    set layers=my layer set,
 }
+\setbeamertemplate{section in toc}[sections numbered]
+\setbeamertemplate{subsection in toc}[subsections numbered]
 
+\usepackage{varwidth}
+\usepackage{etoolbox}
+\makeatletter
+%\patchcmd{\beamer@sectionintoc}{\vskip1.5em}{\vskip0.5em}{}{}
+\patchcmd{\beamer@sectionintoc}{%
+  \hbox{\vbox{%
+    \def\beamer@breakhere{\\}%
+    \beamer@tocact{\ifnum\c@section=#1\beamer@toc@cs\else\beamer@toc@os\fi}{section in toc}}}%
+}{%
+  \hbox{%
+    \def\beamer@breakhere{}%
+    \beamer@tocact{\ifnum\c@section=#1\beamer@toc@cs\else\beamer@toc@os\fi}{section in toc}}%
+}{}{}
+\makeatother
+
+\newcommand{\tensorflow}{\tikz[baseline]{\node[anchor = base, inner sep = 0pt] {\raisebox{-1pt}{\includegraphics[height = 1.1em]{./template/icon_in_cover.pdf}}};}}
 \begin{document}
 \insertcover
 
 \begin{frame}{目录}
-    \tableofcontents
+    \tableofcontents[hideallsubsections]
 \end{frame}
 
 \input{./sections/appetizer}
-\input{./sections/introduction}
+% \input{./sections/introduction}
 \input{./sections/concept}
 \input{./sections/practice}
+\input{./sections/conclusion}
 
 \insertthanks
 

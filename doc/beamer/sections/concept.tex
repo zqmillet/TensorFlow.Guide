@@ -1,6 +1,55 @@
 %!TEX root = ../main.tex
 
-\section{TensorFlow 基本概念}
+\section{TensorFlow 简易教程}
+\begin{frame}{\secname}
+\vfill\hspace{20pt}
+\begin{minipage}[m]{0.35\textwidth}
+  \linespread{1}\large
+  \tableofcontents[sectionstyle = hide/hide, subsectionstyle = show/show/hide]
+\end{minipage}%
+\hfill%
+\begin{minipage}[m]{0.5\textwidth}
+  \includegraphics[height = 7cm]{./icons/lesson.pdf}
+\end{minipage}%
+\vfill
+\end{frame}
+
+\subsection{TensorFlow 简介}
+\begin{frame}{\insertsection}{\insertsubsection}
+    \tensorflow{} 是一款通过数据流图进行数值计算的开源库. \tensorflow{}  最早是被 Google Brain 的研究者和工程师开发出来的用于机器学习和深度神经网络的研究. 但是这个系统也同样适用于其他领域.
+
+    \tensorflow{} 具有很多非常好的特性:%
+    %
+    \begin{itemize}
+        \item \textbf{易用性}, \tensorflow{} 封装了很多复杂运算, 使用者只需构建计算图.
+        \item \textbf{可移植性}, \tensorflow{} 支持多种平台, 系统以及硬件.
+        \item \textbf{自动求导}, \tensorflow{} 支持自动求导, 给采用基于梯度下降的学习方法带来了极大便利.
+        \item \textbf{支持多种语言}, \tensorflow{} 提供方便易用的 Python 接口, 也支持 C++, Java, Go 等语言.
+        \item \textbf{性能最大化}, 可以部署到不同硬件, 并使用线程, 队列, 异步计算来最大化硬件使用效率.
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{\insertsection}{\insertsubsection}
+    \begin{table}[!htb]
+        \centering
+        \begin{tabu}{X[l, -1]|X[l]}
+            \tabucline[1pt]{-}
+            编程模型 & Dataflow-Like Model\\\hline
+            语言     & Python, C++, Go, Rust, Haskell, Java, Julia, JavaScript, R\\\hline
+            部署     & Code-once, run everywhere\\\hline
+            计算资源 & CPU, GPU, TPU\\\hline
+            实现方式 & Local Implementation, Distributed Implementation\\\hline
+            平台支持 & Google Cloud Platform, Hadoop File System\\\hline
+            数学表达 & Math Graph Expression, Auto Differentiation\\\hline
+            优化     & Common Subexpression Elimination,\\
+                     & Asynchronous Kernel Optimization,\\
+                     & Communication Optimization,\\
+                     & Model Parallelism, Data Parallelism, Pipeline\\
+            \tabucline[1pt]{-}
+        \end{tabu}
+    \end{table}
+\end{frame}
+
 \subsection{张量 Tensor}
 \begin{frame}{\insertsection}{\insertsubsection}
 张量最初是个物理学的概念,
@@ -10,13 +59,13 @@
     \rule{0pt}{0pt}\hfill  --- A. Zee, "Einstein Gravity in a Nutshell"
 \end{quote}
 
-在 TensorFlow 中, 可以将张量理解成多维数组, 张量穿梭在数据流图中, 当经过节点时, 会被节点按照特定法则变换成另一个张量, 这个就是 TensorFlow 名字的由来.
+在 \tensorflow{} 中, 可以将张量理解成多维数组, 张量穿梭在数据流图中, 当经过节点时, 会被节点按照特定法则变换成另一个张量, 这个就是 \tensorflow{} 名字的由来.
 
-张量的维数被称为张量的阶, 我们常见的标量, 其实是 $0$ 阶张量, 矢量就是 $1$ 阶张量, 矩阵就是 $2$ 阶张量, 一幅图片, 在 TensorFlow 中可以是 $3$ 阶张量.
+张量的维数被称为张量的阶, 我们常见的标量, 其实是 $0$ 阶张量, 矢量就是 $1$ 阶张量, 矩阵就是 $2$ 阶张量, 一幅图片, 在 \tensorflow{} 中可以是 $3$ 阶张量.
 \end{frame}
 
 \begin{frame}{\insertsection}{\insertsubsection}
-TensorFlow 文档中使用了三种记号来方便地描述张量的维度: 阶, 形状以及维数. 下表展示了他们之间的关系:\vspace{10pt}
+\tensorflow{} 文档中使用了三种记号来方便地描述张量的维度: 阶, 形状以及维数. 下表展示了他们之间的关系:\vspace{10pt}
 
 \begin{table}
   \centering
@@ -37,7 +86,7 @@ TensorFlow 文档中使用了三种记号来方便地描述张量的维度: 阶,
 \end{frame}
 
 \begin{frame}{\insertsection}{\insertsubsection}
-除了维度, Tensors有一个数据类型属性. 可为一个张量指定下列数据类型的任意一个类型:\vspace{10pt}
+除了维度, Tensors 有一个数据类型属性. 可为一个张量指定下列数据类型的任意一个类型:\vspace{10pt}
 
 \begin{table}
   \centering
@@ -59,17 +108,17 @@ TensorFlow 文档中使用了三种记号来方便地描述张量的维度: 阶,
 \end{frame}
 
 \begin{frame}[fragile]{\insertsection}{\insertsubsection}
-TensorFlow 中张量包括 \inlinepython{constant}, \inlinepython{placeholder} 和 \inlinepython{Variable}.
+\tensorflow{} 中张量包括 \inlinepython{constant}, \inlinepython{placeholder} 和 \inlinepython{Variable}.
 
 \begin{onlyenv}<2>
-\inlinepython{tf.constant()} 函数提供在 TensorFlow 中定义不可更改张量的方法, 定义如下所示.
+\inlinepython{tf.constant()} 函数提供在 \tensorflow{} 中定义不可更改张量的方法, 定义如下所示.
 
 \begin{pythoncode}
 def constant(value, dtype=None, shape=None, name="Const", verify_shape=False)
 \end{pythoncode}
 
 \begin{itemize}
-\item \inlinepython{value}, 符合 TensorFlow 中定义的数据类型的常数值或者常数列表;
+\item \inlinepython{value}, 符合 \tensorflow{} 中定义的数据类型的常数值或者常数列表;
 \item \inlinepython{dtype}, 数据类型, 可选;
 \item \inlinepython{shape}, 常量的形状, 可选;
 \item \inlinepython{name}, 常量的名字, 可选;
@@ -80,23 +129,23 @@ def constant(value, dtype=None, shape=None, name="Const", verify_shape=False)
 \end{onlyenv}
 
 \begin{onlyenv}<3>
-\inlinepython{tf.placeholder()} 函数提供在 TensorFlow 中定义占位张量的方法, 定义如下所示.
+\inlinepython{tf.placeholder()} 函数提供在 \tensorflow{} 中定义占位张量的方法, 定义如下所示.
 
 \begin{pythoncode}
 def placeholder(dtype, shape=None, name=None)
 \end{pythoncode}
 
 \begin{itemize}
-\item \inlinepython{dtype} 指定占位张量的数据类型, 可以是 TensorFlow 中的数据类型, 如常用的 \inlinepython{tf.float32}, \inlinepython{tf.float64} 等数值类型;
-\item \inlinepython{shape} 表示数据类型, 默认的 \inlinepython{None} 是一个一维的数值, \inlinepython{shape = [None, 5]}, 表示行不定, 列是 \inlinepython{5};
+\item \inlinepython{dtype} 指定占位张量的数据类型, 可以是 \tensorflow{} 中的数据类型, 如常用的 \inlinepython{tf.float32}, \inlinepython{tf.float64} 等数值类型;
+\item \inlinepython{shape} 表示数据类型, \inlinepython{shape = [None, 5]}, 表示行不定, 列是 \inlinepython{5};
 \item \inlinepython{name} 是张量名称;
 \end{itemize}
 
-占位变量是一种 TensorFlow 用来解决读取大量训练数据问题的机制, 它允许你现在不用给它赋值, 随着训练的开始, 再把训练数据传送给训练网络学习.
+占位变量是一种 \tensorflow{} 用来解决读取大量训练数据问题的机制, 它允许你现在不用给它赋值, 随着训练的开始, 再把训练数据传送给训练网络学习.
 \end{onlyenv}
 
 \begin{onlyenv}<4->
-TensorFlow 中变量是通过 \inlinepython{Variable} 类来实现的, 初始化函数 \inlinepython{tf.Variable()} 定义如下.
+\tensorflow{} 中变量是通过 \inlinepython{Variable} 类来实现的, 初始化函数定义如下.
 
 \begin{pythoncode}
 def __init__(self, initial_value=None, trainable=True, collections=None, validate_shape=True, caching_device=None, name=None, variable_def=None, dtype=None, expected_shape=None, import_scope=None)
@@ -106,13 +155,13 @@ def __init__(self, initial_value=None, trainable=True, collections=None, validat
 \only<4>{
 \begin{itemize}
 \item \inlinepython{initial_value}, 初始值, 必填, 张量或可以转换为张量的 Python 对象;
-\item \inlinepython{trainable}, 如果参数 \inlinepython{trainable} 的值为 \inlinepython{True}, 则默认值也将变量添加到图形中集合 \inlinepython{GraphKeys.TRAINABLE_VARIABLES}。这个集合用作 \inlinepython{Optimizer} 类使用的默认变量列表;
-\item \inlinepython{collections}, 新的变量被添加到这些集合。默认为 \inlinepython{[GraphKeys.GLOBAL_VARIABLES]};
+\item \inlinepython{trainable}, 如果参数 \inlinepython{trainable} 的值为 \inlinepython{True}, 则默认值也将变量添加到图形中集合 \inlinepython{GraphKeys.TRAINABLE_VARIABLES}. 这个集合用作 \inlinepython{Optimizer} 类使用的默认变量列表;
+\item \inlinepython{collections}, 新的变量被添加到这些集合. 默认为 \inlinepython{[GraphKeys.GLOBAL_VARIABLES]};
 \end{itemize}
 }
 \only<5>{
 \begin{itemize}
-\item \inlinepython{validate_shape}, 如果 \inlinepython{False}, 允许变量用初始化未知形状的值。如果 \inlinepython{True}, 默认的形状 \inlinepython{initial_value} 必须是已知的;
+\item \inlinepython{validate_shape}, 如果 \inlinepython{False}, 允许变量用初始化未知形状的值. 如果 \inlinepython{True}, 默认的形状 \inlinepython{initial_value} 必须是已知的;
 \item \inlinepython{caching_device}, 指定变量的默认缓存位置;
 \item \inlinepython{name}, 是张量名称;
 \end{itemize}
@@ -131,7 +180,7 @@ def __init__(self, initial_value=None, trainable=True, collections=None, validat
 
 \subsection{节点 Operator}
 \begin{frame}{\insertsection}{\insertsubsection}
-在 TensorFlow 中, 每一个节点代表着一个操作, 一般用来表示施加的的数学运算, 也可以表示数据输入的起点以及输出的终点. 下面是一些重要的操作:
+在 \tensorflow{} 中, 每一个节点代表着一个操作, 一般用来表示施加的的数学运算, 也可以表示数据输入的起点以及输出的终点. 下面是一些重要的操作:\vspace{-15pt}
 
 \begin{table}
   \centering
@@ -156,7 +205,7 @@ def __init__(self, initial_value=None, trainable=True, collections=None, validat
 \begin{frame}{\insertsection}{\insertsubsection}
 \vspace{10pt}
 \begin{minipage}[m]{0.5\textwidth}
-    TensorFlow 是用数据流图对计算过程进行描述的. 在数据流图中, 节点代表数学运算, 边表示节点之间的某种联系, 负责在节点之间传输即张量.
+    \tensorflow{} 是用数据流图对计算过程进行描述的. 在数据流图中, 节点代表数学运算, 边表示节点之间的某种联系, 负责在节点之间传输即张量.
 
     节点可以被分配到多个计算设备上, 可以异步和并行的进行操作. 因为是有向图, 所以只能等待之前的节点运行结束, 当前节点才能执行操作.
 
@@ -233,7 +282,7 @@ loss = tf.reduce_mean(tf.reduce_sum(tf.square(actual_values - predict_values), r
 
 \subsection{会话 Session}
 \begin{frame}[fragile]{\insertsection}{\insertsubsection}
-构造阶段完成后, 才能启动图。启动图的第一步是创建一个 Session 对象, 如果无任何创建参数, 会话构造器将启动默认图。会话会管理TensorFlow程序运行时的所有资源。当所有计算完成之后需要关闭会话来帮助系统回收资源，否则就可能出现资源泄露的问题。
+构造阶段完成后, 才能启动图. 启动图的第一步是创建一个 Session 对象, 如果无任何创建参数, 会话构造器将启动默认图. 会话会管理 \tensorflow{} 程序运行时的所有资源. 当所有计算完成之后需要关闭会话来帮助系统回收资源, 否则就可能出现资源泄露的问题. \vspace{10pt}
 
 \begin{minipage}[t]{0.48\textwidth}
 \begin{pythoncode}
