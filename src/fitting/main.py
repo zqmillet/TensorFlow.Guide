@@ -17,20 +17,22 @@ x2 = tf.nn.relu(tf.matmul(x1, w1) + b1)
 w2 = tf.Variable(tf.random_normal([10, 1]))
 b2 = tf.Variable(tf.ones([1, 1]))
 
-
-
-
-# tensorboard_dir = './tensorboard/'
-# if not os.path.exists(tensorboard_dir):
-#     os.makedirs(tensorboard_dir)
-
-# writer = tf.summary.FileWriter(tensorboard_dir)
-# writer.add_graph(session.graph)
 predict_values = tf.matmul(x2, w2) + b2
 actual_values = tf.placeholder(tf.float32, [None, 1])
 loss = tf.reduce_mean(tf.reduce_sum(tf.square(actual_values - predict_values), reduction_indices = [1]))
 
+tf.summary.histogram('w2',w2)
+tf.summary.scalar('loss', loss)
+merged = tf.summary.merge_all()
+
 with tf.Session() as session:
+    tensorboard_directory = './tensorboard/'
+    if not os.path.exists(tensorboard_directory):
+        os.makedirs(tensorboard_directory)
+
+    writer = tf.summary.FileWriter(tensorboard_directory)
+    writer.add_graph(session.graph)
+
     session.run(tf.global_variables_initializer())
 
     (input_data, output_data) = load_training_data('./training_data.dat')
@@ -38,11 +40,9 @@ with tf.Session() as session:
 
     for i in range(1000):
         session.run(train_step, feed_dict = {x1:input_data, actual_values:output_data})
-        if i % 50 == 0:
-            print(session.run(loss, feed_dict = {x1:input_data, actual_values:output_data}))
+        log = session.run(merged, feed_dict = {x1:input_data, actual_values:output_data})
+        writer.add_summary(log, i)
 
-    # x = input_data
-    # y = session.run(predict_values, feed_dict = {x1:x})
     predicted_output_data = session.run(predict_values, feed_dict = {x1:input_data})
     plt.plot(input_data, predicted_output_data)
     plt.plot(input_data, output_data)

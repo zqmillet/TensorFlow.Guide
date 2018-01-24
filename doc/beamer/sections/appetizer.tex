@@ -19,9 +19,10 @@
 \begin{minipage}[m]{0.48\textwidth}
 在二维空间中, 有 $500$ 个点, 这 $500$ 个点被分成两类, 一类被标记为绿色, 一类被标记为蓝色, 如右图所示.
 
+\uncover<2->{
 现在的问题是, 计算机如何根据已有的数据, 找到一个分类的方法, 可以在给定 $(x_1, x_2)$ 时, 会判断点 $(x_1, x_2)$ 的颜色.
 
-计算机解决二分类的方法有很多, 在这里, 介绍一种基于神经网络的方法, 来解决这个问题, 来帮助大家理解机器学习的过程.
+计算机解决二分类的方法有很多, 在这里, 介绍一种基于神经网络的方法, 来解决这个问题, 来帮助大家理解机器学习的过程.}
 \end{minipage}%
 \hfill%
 \begin{minipage}[m]{0.48\textwidth}
@@ -45,6 +46,7 @@
 我们不妨设绿色为 $1$, 蓝色为 $0$, 那么, 问题就变成了找到一个坐标 $(x_1, x_2)$ 到颜色 $y$ 的一个映射关系 $y = h(x_1, x_2)$.\vspace{10pt}
 
 \begin{minipage}[m]{0.55\textwidth}
+\uncover<2->{
 为此, 我们建立一个简单的神经网络, 如图所示.
 \begin{center}
 \scalebox{0.8}{%
@@ -63,15 +65,18 @@
   \draw[->] (sum) -- (step);
   \draw[->] (step) -- ++(0:1.5cm) node[anchor = west] {$y$};
 \end{tikzpicture}}
-\end{center}
+\end{center}%
+}%
+\uncover<3->{%
 因此, 我们可以得到神经网络的表达式:\vspace{-10pt}
 \begin{align*}
   y &= H(W_1x_1 + W_2x_2 + 1)\text{,}\\
     &= H\big((W_1, W_2)\cdot(x_1, x_2)^\top + 1\big) = H(\bm{W}\bm{x} + 1)\text{.}
-\end{align*}
+\end{align*}}
 \end{minipage}%
 \hfill%
 \begin{minipage}[m]{0.43\textwidth}
+\uncover<2->{
 \begin{tikzpicture}
   \begin{axis}[width = \textwidth,
                height = 5.7cm,
@@ -80,7 +85,7 @@
                title = 单位阶跃函数图像]
     \addplot[mark = none, samples = 100, blue] {x > 0};
   \end{axis}
-\end{tikzpicture}
+\end{tikzpicture}}
 \end{minipage}
 \end{frame}
 
@@ -88,12 +93,14 @@
 \begin{frame}{\insertsection}{\insertsubsection}
 所谓目标函数, 就是当目标函数取得最值的时候, 神经网络最符合我们的预期. 换句话就是, 目标函数就是衡量神经网络好坏指标.
 
+\uncover<2->{
 我们这里采用所有样本都分类成功的概率作为目标函数:
 \[
 p(X) = \prod_{i = 1}^{500} p(X_i)\text{,}
-\]
+\]\vspace{-10pt}}%
 
-对于第 $i$ 个坐标 $\bm{x}_i = (x_{i, 1}, x_{i, 2})$,其正确值是 $y_i$,那么当曲线 $h(x_1, x_2)$ 给定的情况下,其作出正确分类的概率为%
+\uncover<3->{%
+对于第 $i$ 个坐标 $\bm{x}_i = (x_{i, 1}, x_{i, 2})$,其正确值是 $y_i$,那么当分类规则 $H(\bm{W}\bm{x} + 1)$ 给定的情况下,其作出正确分类的概率为%
 %
 \begin{align*}
   p(X_i) &= \left\{
@@ -102,7 +109,7 @@ p(X) = \prod_{i = 1}^{500} p(X_i)\text{,}
     0, & \text{$H(\bm{W}\bm{x}_i + 1) = 0, y_i = 1$ 或者 $H(\bm{W}\bm{x}_i + 1) = 1, y_i = 0$.}
   \end{array}
   \right.
-\end{align*}
+\end{align*}}
 \end{frame}
 
 \begin{frame}{\insertsection}{\insertsubsection}
@@ -114,8 +121,9 @@ p(X) = \prod_{i = 1}^{500} p(X_i)\text{,}
     0, & \text{$H(\bm{W}\bm{x}_i + 1) = 0, y_i = 1$ 或者 $H(\bm{W}\bm{x}_i + 1) = 1, y_i = 0$.}
   \end{array}
   \right.
-\]
+\]\vspace{0pt}
 
+\uncover<2->{
 我们可以注意到, 当 $y_i = 1$ 时, $p(X_i)$ 的值与 $H(\bm{W}\bm{x}_i + 1)$ 一致; 当 $y_i = 0$ 时, $p(X_i)$ 的值与 $H(\bm{W}\bm{x}_i + 1)$ 和为 $1$, 于是有:
 \[
   p(X_i) = \left\{
@@ -124,12 +132,13 @@ p(X) = \prod_{i = 1}^{500} p(X_i)\text{,}
     1 - H(\bm{W}\bm{x}_i + 1), & y_i = 0\text{.}
   \end{array}
   \right.
-\]
+\]}
 
+\uncover<3->{
 注意到 $\forall x \in \mathbb{R}$ 都有 $x^0 = 1$, 还可以将上式继续化简为:
 \[
   p(X_i) = H(\bm{W}\bm{x}_i + 1)^{y_i}\cdot\big(1 - H(\bm{W}\bm{x}_i + 1)\big)^{1 - y_i}\text{.}
-\]
+\]}
 \end{frame}
 
 \begin{frame}{\insertsection}{\insertsubsection}
@@ -138,38 +147,44 @@ p(X) = \prod_{i = 1}^{500} p(X_i)\text{,}
   p(X) = \prod_{i = 1}^{500} H(\bm{W}\bm{x}_i + 1)^{y_i}\cdot\big(1 - H(\bm{W}\bm{x}_i + 1)\big)^{1 - y_i}\text{.}
 \]
 
+\uncover<2->{
 为了方便计算, 对上式左右两边都取以 $\e$ 为底的对数:
 \[
   \ln p(X) = \sum_{i = 1}^{500} y_i\ln H(\bm{W}\bm{x}_i + 1) + (1 - y_i)\ln\big(1 - H(\bm{W}\bm{x}_i + 1)\big)\text{.}
-\]
+\]\vspace{-10pt}}
 
+\uncover<3->{
 但是, 上述目标函数还存在问题:%
 %
 \begin{itemize}
-\item 导致函数 $\ln p(X)$ 不可微, 不能采用梯度下降法来计算函数的最值(其实是极值);
 \item 只要有一个预测错误, 函数 $\ln p(X) = -\infty$, 目标函数并不能衡量模型的精度.
-\end{itemize}
+\item 导致函数 $\ln p(X)$ 不可微, 不能采用梯度下降法来计算函数的最值(其实是极值);
+\end{itemize}}
 \end{frame}
 
 \begin{frame}{\insertsection}{\insertsubsection}
 解决方法就是用 Sigmoid 函数 $g(\,\cdot\,)$ 代替上式中的单位阶跃函数 $H(\,\cdot\,)$, 原因有:
 \begin{itemize}
-\item Sigmoid 函数与单位阶跃函数形状非常相似, 并且值域为 $(0, 1)$, 不会导致目标函数出现 $-\infty$ 的情况, 其函数图像如右图所示.
+\uncover<2->{
+\item Sigmoid 函数与单位阶跃函数形状非常相似, 并且值域为 $(0, 1)$, 不会导致目标函数出现 $-\infty$ 的情况, 其函数图像如右图所示.}
 \end{itemize}\vspace{-10pt}
 \begin{minipage}[t]{0.48\textwidth}
 \begin{itemize}
+\uncover<3->{%
 \item Sigmoid 处处可微, Sigmoid 的表达式为:%
 \[
   g(x) = \frac{1}{1 + \exp(-x)}\text{.}
-\]
+\]}%
+\uncover<4->{\vspace{-15pt}%
 \item Sigmoid 函数有非常好的导函数性质, 有:%
 \[
   \frac{\dif g(x)}{\dif x} = g(x)\cdot\big(1 - g(x)\big)\text{.}
-\]
+\]}%
 \end{itemize}
 \end{minipage}%
 \hfill%
 \begin{minipage}[t]{0.48\textwidth}
+\uncover<2->{
 \begin{figure}
   \centering\vspace{-20pt}
   \begin{tikzpicture}
@@ -183,21 +198,24 @@ p(X) = \prod_{i = 1}^{500} p(X_i)\text{,}
       \legend{单位阶跃函数, Sigmoid 函数};
     \end{axis}
   \end{tikzpicture}
-\end{figure}
+\end{figure}}
 \end{minipage}
+\uncover<5->{\vspace{-15pt}%
 \begin{flalign*}
 & \text{目标函数:} &&  \ell(\bm{W}) = -\sum_{i = 1}^{500} y_i\ln g(\bm{W}\bm{x}_i + 1) + (1 - y_i)\ln\big(1 - g(\bm{W}\bm{x}_i + 1)\big)\text{.} &&
-\end{flalign*}
+\end{flalign*}}
 \end{frame}
 
 \subsection{参数训练}
 \begin{frame}{\insertsection}{\insertsubsection}
 参数训练的本质是找到一个参数 $\bm{W}$ 使目标函数 $\ell(\bm{W})$ 取得最小值, 常用的是梯度下降法.
 
+\uncover<2->{%
 \begin{quote}
 把 $\bm{W} = (W_1, W_2)$ 看成是平面坐标, $\ell(\bm{W})$ 看作是坐标 $(W_1, W_2)$ 的海拔高度, 梯度下降法的策略就是每次向最陡的方向走一步, 一直走到海拔不变为止, 此时就是海拔``最低点'', 即 $\ell(\bm{W})$ 的极小值点.
-\end{quote}\vspace{-15pt}
+\end{quote}\vspace{-15pt}}
 
+\uncover<3->{
 \tikzstyle{every picture}+=[remember picture]
 \tikzstyle{na} = [baseline=-.5ex]
 \begin{flalign*}
@@ -222,17 +240,17 @@ p(X) = \prod_{i = 1}^{500} p(X_i)\text{,}
 \draw[->, rounded corners, red] (w2') -| ([yshift = -2pt]w2.south);
 \draw[->, rounded corners, black] (r') -| ([yshift = -2pt]r.south);
 \draw[->, rounded corners, green] (p') -| ([yshift = -2pt]p.south);
-\end{tikzpicture}
+\end{tikzpicture}}
 \end{frame}
 
 \begin{frame}{\insertsection}{\insertsubsection}
-我们计算一下 $\frac{\partial \ell(\bm{W})}{\partial \bm{W}}$, 设 $z = \bm{W}\bm{x} + 1 = W_1x_{i,1} + W_2x_{i,2} + 1$, 于是:
+我们计算一下 $\frac{\partial \ell(\bm{W})}{\partial \bm{W}}$, 设 $z = \bm{W}\bm{x} + 1 = W_1x_1 + W_2x_2 + 1$, 于是:\pause
 \begin{align*}
-\dfrac{\partial \ell(\bm{W})}{\partial z} &= -\dfrac{\partial \displaystyle\sum_{i = 1}^{500} \Big(y_i\ln g(z) + (1 - y_i)\ln\big(1 - g(z)\big)\Big)}{\partial z}\text{,}\\
-  &= -\sum_{i = 1}^{500} y_i \dfrac{\partial \ln g(z)}{\partial z} + (1 - y_i)\dfrac{\partial\ln \big(1 - g(z)\big)}{\partial z} = -\sum_{i = 1}^{500} y_i \dfrac{g'(z)}{g(z)} + (1 - y_i)\dfrac{-g'(z)}{1 - g(z)}\text{,}\\
-  &= -\sum_{i = 1}^{500} y_i \dfrac{g(z)(1 - g(z))}{g(z)} + (1 - y_i)\dfrac{-g(z)(1 - g(z))}{1 - g(z)} = -\sum_{i = 1}^{500} y_i - g(z)\text{.}\\
-  \dfrac{\partial \ell(\bm{W})}{\partial W_1} &= -\dfrac{\partial \ell(\bm{W})}{\partial z} \cdot \dfrac{\partial z}{\partial W_1} = -\sum_{i = 1}^{500} \big(y_i - g(W_1x_{i,1} + W_2x_{i,2} + 1)\big)\cdot x_{i,1}\text{,}\\
-  \dfrac{\partial \ell(\bm{W})}{\partial W_2} &= -\dfrac{\partial \ell(\bm{W})}{\partial z} \cdot \dfrac{\partial z}{\partial W_2} = -\sum_{i = 1}^{500} \big(y_i - g(W_1x_{i,1} + W_2x_{i,2} + 1)\big)\cdot x_{i,2}\text{.}
+  \dfrac{\partial \ell(\bm{W})}{\partial z} &= -\dfrac{\partial \displaystyle\sum_{i = 1}^{500} \Big(y_i\ln g(z) + (1 - y_i)\ln\big(1 - g(z)\big)\Big)}{\partial z}\text{,}\\
+  \uncover<3->{&= -\sum_{i = 1}^{500} y_i \dfrac{\partial \ln g(z)}{\partial z} + (1 - y_i)\dfrac{\partial\ln \big(1 - g(z)\big)}{\partial z} = -\sum_{i = 1}^{500} y_i \dfrac{g'(z)}{g(z)} + (1 - y_i)\dfrac{-g'(z)}{1 - g(z)}\text{,}\\}
+  \uncover<4->{&= -\sum_{i = 1}^{500} y_i \dfrac{g(z)(1 - g(z))}{g(z)} + (1 - y_i)\dfrac{-g(z)(1 - g(z))}{1 - g(z)} = -\sum_{i = 1}^{500} y_i - g(z)\text{.}\\}
+  \uncover<5->{\dfrac{\partial \ell(\bm{W})}{\partial W_1} &= \dfrac{\partial \ell(\bm{W})}{\partial z} \cdot \dfrac{\partial z}{\partial W_1} = -\sum_{i = 1}^{500} \big(y_i - g(W_1x_{i,1} + W_2x_{i,2} + 1)\big)\cdot x_{i,1}\text{,}\\
+  \dfrac{\partial \ell(\bm{W})}{\partial W_2} &= \dfrac{\partial \ell(\bm{W})}{\partial z} \cdot \dfrac{\partial z}{\partial W_2} = -\sum_{i = 1}^{500} \big(y_i - g(W_1x_{i,1} + W_2x_{i,2} + 1)\big)\cdot x_{i,2}\text{.}}
 \end{align*}
 \end{frame}
 
@@ -255,7 +273,7 @@ def l(x1, x2, y, w1, w2): # 定义目标函数 $\ell(\bm{W}) =  -\sum_{i = 1}^{5
 def get_delta_w1(x1, x2, y, w1, w2): # 定义 $\frac{\partial \ell(\bm{W})}{\partial W_1} = -\sum_{i = 1}^{500} \big(y_i - g(W_1x_{i,1} + W_2x_{i,2} + 1)\big)\cdot x_{i,1}$
   return -sum([(y - sigmoid(z(x1, x2, w1, w2))) * x1 for x1, x2, y in zip(x1, x2, y)])
 
-def get_delta_w2(x1, x2, y, w1, w2): # 定义 $\frac{\partial \ell(\bm{W})}{\partial W_1} = -\sum_{i = 1}^{500} \big(y_i - g(W_1x_{i,1} + W_2x_{i,2} + 1)\big)\cdot x_{i,2}$
+def get_delta_w2(x1, x2, y, w1, w2): # 定义 $\frac{\partial \ell(\bm{W})}{\partial W_2} = -\sum_{i = 1}^{500} \big(y_i - g(W_1x_{i,1} + W_2x_{i,2} + 1)\big)\cdot x_{i,2}$
   return -sum([(y - sigmoid(z(x1, x2, w1, w2))) * x2 for x1, x2, y in zip(x1, x2, y)])
 \end{pythoncode}
 \end{columns}
@@ -290,9 +308,9 @@ print('w1 = {w1}, w2 = {w2}'.format(w1 = w1, w2 = w2)) # 打印结果
 在训练的过程中, 我们将每一次迭代的结果记录下来, 并绘制成曲线图, 如右图所示.
 
 \begin{itemize}
-\item 每一步的方向都是垂直于等高线, 即梯度的方向, 这就是梯度下降法的由来;
-\item 步长越来越小, 这是因为坡度越来越缓;
-\item 最终参数 $W_1$ 和 $W_2$ 收敛于 $(1.84, -5.46)$.
+\item<2-> 每一步的方向都是垂直于等高线, 即梯度的方向, 这就是梯度下降法的由来;
+\item<3-> 步长越来越小, 这是因为坡度越来越缓;
+\item<4-> 最终参数 $W_1$ 和 $W_2$ 收敛于 $(1.84, -5.46)$.
 \end{itemize}
 \end{minipage}%
 \hfill%
@@ -312,7 +330,6 @@ print('w1 = {w1}, w2 = {w2}'.format(w1 = w1, w2 = w2)) # 打印结果
 \end{frame}
 
 \subsection{结果分析}
-
 \begin{frame}{\insertsection}{\insertsubsection}
 \begin{minipage}[m]{0.48\textwidth}
 由于 参数 $W_1$ 和 $W_2$ 收敛于 $(1.84, -5.46)$, 我们可以得到一条直线:
@@ -320,12 +337,15 @@ print('w1 = {w1}, w2 = {w2}'.format(w1 = w1, w2 = w2)) # 打印结果
   1.84x_1 - 5.46x_2 + 1 = 0\text{.}
 \]%
 %
-如右图所示, 可见, 结果很不理想. 通过分析数据, 我们可以看出, 点 $(1.84, -5.46)$ 处的目标函数值为 $\ell(1.84, -5.46) = 105.11$, 也是非常不理想的.
+\uncover<2->{%
+如右图所示, 可见, 结果很不理想. 通过分析数据, 我们可以看出, 点 $(1.84, -5.46)$ 处的目标函数值为 $\ell(1.84, -5.46) = 105.11$, 也是非常不理想的.}
 
-这是由于用 Sigmoid 函数代替单位阶跃函数时, 给目标函数带来的误差导致的.
+\uncover<3->{
+这是由于用 Sigmoid 函数代替单位阶跃函数时, 给目标函数带来的误差导致的.}
 \end{minipage}%
 \hfill%
 \begin{minipage}[m]{0.48\textwidth}
+\uncover<2->{
 \begin{tikzpicture}
   \begin{axis}[%
     xlabel = $x_1$,
@@ -338,7 +358,7 @@ print('w1 = {w1}, w2 = {w2}'.format(w1 = w1, w2 = w2)) # 打印结果
     \addplot[only marks, discard if not={type}{0}, green] table[col sep=comma, x = x1, y = x2]{./data/classification/training_data.dat};
     \addplot[mark = none, domain = -1:1, white, line width = 1pt, double = red, double distance = 2pt, on layer = foreground] {1.84/5.46*x + 1.0/5.46} node[midway, sloped, text = black] {\shadowtext{$1.84x_1 - 5.46x_2 + 1 = 0$}};
   \end{axis}
-\end{tikzpicture}
+\end{tikzpicture}}
 \end{minipage}
 \end{frame}
 
@@ -350,9 +370,11 @@ print('w1 = {w1}, w2 = {w2}'.format(w1 = w1, w2 = w2)) # 打印结果
   g(x, n) = \frac{1}{1 + \exp(n\cdot x)}\text{.}
 \]
 
-分别绘制单位阶跃函数, $g(x, 1)$ 和 $g(x, 5)$, 可以看出, 随着 $n$ 的增大, 函数 $g(x, n)$ 越来越接近于单位阶跃函数 $H(x)$.
+\uncover<2->{
+分别绘制单位阶跃函数, $g(x, 1)$ 和 $g(x, 5)$, 可以看出, 随着 $n$ 的增大, 函数 $g(x, n)$ 越来越接近于单位阶跃函数 $H(x)$.}
 \end{minipage}%
 \hfill%
+\uncover<3->{%
 \begin{minipage}[t]{0.55\textwidth}
 \begin{figure}
   \centering\vspace{-20pt}
@@ -370,16 +392,17 @@ print('w1 = {w1}, w2 = {w2}'.format(w1 = w1, w2 = w2)) # 打印结果
     \end{axis}
   \end{tikzpicture}
 \end{figure}
-\end{minipage}
+\end{minipage}}
 
+\uncover<3->{
 \begin{flalign*}
 & \text{并且可以证明:} &&
  \forall x \in \mathbb{R},\,\,\,\, \lim_{n\rightarrow +\infty} g(x, n) = \lim_{n\rightarrow +\infty}\frac{1}{1 + \exp(n\cdot x)} =  H(x)\text{.} &&
-\end{flalign*}
+\end{flalign*}}
 \end{frame}
 
 \begin{frame}{\insertsection}{\insertsubsection}
-最终参数 $W_1$ 和 $W_2$ 收敛于 $(0.99, -2.93)$. 分类效果和参数 $W_1$ 和 $W_2$ 的轨迹如下所示.\vspace{10pt}
+令 $n = 10$, 参数 $W_1$ 和 $W_2$ 收敛于 $(0.99, -2.93)$. 分类效果和参数 $W_1$ 和 $W_2$ 轨迹如下所示.\vspace{10pt}
 
 \begin{tikzpicture}
   \begin{groupplot}[group style={group size = 2 by 1, horizontal sep = 1.5cm}]
@@ -411,9 +434,9 @@ print('w1 = {w1}, w2 = {w2}'.format(w1 = w1, w2 = w2)) # 打印结果
 \begin{minipage}[m]{0.31\textwidth}
 我们把学习率 $r$ 提高, 重新进行学习, 参数 $W_1$ 和 $W_2$ 的变化轨迹如右图所示.
 
-可以看到, 整个目标函数的最优点仍然是 $(0.99, -2.93)$, 但是, 参数 $W_1$ 和 $W_2$ 无法收敛于最优点.
+\uncover<2->{可以看到, 整个目标函数的最优点仍然是 $(0.99, -2.93)$, 但是, 参数 $W_1$ 和 $W_2$ 无法收敛于最优点.}
 
-相对的, 过小的学习率会导致特学习过程非常缓慢. 故选择合适大小的学习率是非常重要的.
+\uncover<3->{相对的, 过小的学习率会导致特学习过程非常缓慢. 故选择合适大小的学习率是非常重要的.}
 \end{minipage}%
 \hfill%
 \begin{minipage}[m]{0.65\textwidth}
@@ -446,7 +469,8 @@ print('w1 = {w1}, w2 = {w2}'.format(w1 = w1, w2 = w2)) # 打印结果
 \end{itemize}
 \end{itemize}
 
-但是, 机器学习的过程复杂, 需要计算非常复杂的目标函数, 梯度的表达式, 编码过程中非常容易出错, 训练结果难以移植到生产系统中……
+\pause
+但是, 机器学习的过程复杂, 需要计算非常复杂的目标函数, 梯度的表达式, 编码过程中非常容易出错, 有大量的多维数据运算, 计算缓慢……
 \end{frame}
 
 % \begin{frame}[fragile]{\insertsection}{\insertsubsection}

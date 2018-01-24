@@ -1,16 +1,7 @@
-def load_training_data(path): # 读取训练数据
-    with open(path, 'r', encoding = 'utf8') as file:
-        next(file)
-        lines = [[float(item) for item in line.split(',')] for line in file]
-    return (np.array([line[i] for line in lines])[:, None] for i in [0, 1])
-
-with tf.Session() as session: # 初始化 Session
-  session.run(tf.global_variables_initializer()) # 初始化变量
-
-  (input_data, output_data) = load_training_data('./training_data.dat') # 加载训练数据
-  train_step = tf.train.GradientDescentOptimizer(0.1).minimize(loss) # 设置目标函数
-
-  for i in range(1000): # 训练 $1000$ 次
-    session.run(train_step, feed_dict = {x1:input_data, actual_values:output_data})
-    if i % 50 == 0:
-      print(session.run(loss, feed_dict = {x1:input_data, actual_values:output_data}))
+import tensorflow as tf
+from tensorflow.python import debug as tf_debug # 第一行代码加在这
+# 建立数据流图 ...
+with tf.Session() as session:
+  sess = tf_debug.LocalCLIDebugWrapperSession(sess) # 第二行代码加在这
+  # 初始化 ...
+  # 训练模型 ...

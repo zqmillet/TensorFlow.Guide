@@ -225,6 +225,6 @@ TSWLatexianTemp*
 *.sta
 
 # qiqi
-main.pdf
+# main.pdf
 */_minted-main/*
 .DS_Store

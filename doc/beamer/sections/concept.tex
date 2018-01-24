@@ -24,7 +24,7 @@
         \item \textbf{易用性}, \tensorflow{} 封装了很多复杂运算, 使用者只需构建计算图.
         \item \textbf{可移植性}, \tensorflow{} 支持多种平台, 系统以及硬件.
         \item \textbf{自动求导}, \tensorflow{} 支持自动求导, 给采用基于梯度下降的学习方法带来了极大便利.
-        \item \textbf{支持多种语言}, \tensorflow{} 提供方便易用的 Python 接口, 也支持 C++, Java, Go 等语言.
+        \item \textbf{支持多种语言}, \tensorflow{} 提供易用的 Python 接口, 也支持 C++, Java, Go 等语言.
         \item \textbf{性能最大化}, 可以部署到不同硬件, 并使用线程, 队列, 异步计算来最大化硬件使用效率.
     \end{itemize}
 \end{frame}
@@ -52,15 +52,17 @@
 
 \subsection{张量 Tensor}
 \begin{frame}{\insertsection}{\insertsubsection}
-张量最初是个物理学的概念,
+张量最初是个物理学的概念:
 \begin{quote}
     A tensor is something that transforms like a tensor\\
     一个量, 在不同的参考系下按照某种特定的法则进行变换, 就是张量.\\
     \rule{0pt}{0pt}\hfill  --- A. Zee, "Einstein Gravity in a Nutshell"
 \end{quote}
 
+\pause
 在 \tensorflow{} 中, 可以将张量理解成多维数组, 张量穿梭在数据流图中, 当经过节点时, 会被节点按照特定法则变换成另一个张量, 这个就是 \tensorflow{} 名字的由来.
 
+\pause
 张量的维数被称为张量的阶, 我们常见的标量, 其实是 $0$ 阶张量, 矢量就是 $1$ 阶张量, 矩阵就是 $2$ 阶张量, 一幅图片, 在 \tensorflow{} 中可以是 $3$ 阶张量.
 \end{frame}
 
@@ -209,7 +211,7 @@ def __init__(self, initial_value=None, trainable=True, collections=None, validat
 
     节点可以被分配到多个计算设备上, 可以异步和并行的进行操作. 因为是有向图, 所以只能等待之前的节点运行结束, 当前节点才能执行操作.
 
-    如图所示是一个简单的计算流图.%
+    如图所示是一个简单的数据流图.%
     \end{minipage}\hfill
     \begin{minipage}[m]{0.4\textwidth}
     \inlineframe{\scalebox{0.8}{\input{./figures/example_of_simple_computation_graph}}}
@@ -232,7 +234,7 @@ x2 = tf.nn.relu(tf.matmul(x1, w1) + b1)
 w2 = tf.Variable(tf.random_normal([10, 1]))
 b2 = tf.Variable(tf.ones([1, 1]))
 
-predict_values = tf.matmul(x2, w2) + b2
+predicted_values = tf.matmul(x2, w2) + b2
 actual_values = tf.placeholder(tf.float32, [None, 1])
 loss = tf.reduce_mean(tf.reduce_sum(tf.square(actual_values - predict_values), reduction_indices = [1]))
 \end{pythoncode}
@@ -253,7 +255,7 @@ loss = tf.reduce_mean(tf.reduce_sum(tf.square(actual_values - predict_values), r
 \node[operator]         (t2) at (6, 4) {\mintinline{text}{tf.matmul}};
 \node[tensor, circle]   (b2) at (4, 4) {$b_2$};
 \node[operator]         (p2) at (5, 5) {\mintinline{text}{tf.add}};
-\node[tensor]           (pv) at (5, 6) {\mintinline{text}{prediction_values}};
+\node[tensor]           (pv) at (5, 6) {\mintinline{text}{predicted_values}};
 \node[tensor]           (av) at (8, 6) {\mintinline{text}{actual_values}};
 \node[operator]         (sb) at (6.5, 7.5) {\mintinline{text}{tf.sub}};
 \node[operator]         (sq) at (6.5, 8.5) {\mintinline{text}{tf.square}};
